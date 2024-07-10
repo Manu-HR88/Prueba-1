@@ -1,25 +1,72 @@
 import streamlit as st
-from lib2to3.pgen2.pgen import DFAState
 import pandas as pd
-import wbgapi as wb
-import yfinance as yf
 import numpy as np
-import matplotlib.pyplot as plt
-import folium
-from streamlit_folium import folium_static
-from datetime import datetime
-import re
-import nltk
-import plotly.graph_objects as go
-import plotly.express as px
-nltk.download('stopwords')
-nltk.download('punkt')
+import openpyxl
+import os
+import requests
+from io import BytesIO
 
 
-st.markdown("<h1 style='text-align: center; color: orange;'>REPORTE   DEL  CTE</h1>", unsafe_allow_html=True)
+# # Verificar el directorio de trabajo actual
+# st.write("Directorio de trabajo actual:", os.getcwd())
 
-carga_df1 = st.file_uploader("Selecciona archivo formulario de Diálogo con supervisores")
+# # Cargar la plantilla de Excel
+# def load_workbook():
+#     return openpyxl.load_workbook('C:/Users/Usuario/Documents/Proyectos Subtec/Herramienta Planeación/Herramienta Planeación/template.xlsx')
 
-if carga_df1 is not None:
-    df_dialogos = pd.read_csv(carga_df1)
-    st.write(df_dialogos)
+# # Guardar datos en celdas específicas
+# def save_to_excel(name, age, gender):
+#     wb = load_workbook()
+#     sheet = wb.active
+#     sheet['A1'] = name  # Guardar nombre en celda A1
+#     sheet['B1'] = age   # Guardar edad en celda B1
+#     sheet['C1'] = gender # Guardar género en celda C1
+#     wb.save('output.xlsx')
+
+# # Crear la interfaz de usuario
+# st.title("Formulario de Información")
+
+# name = st.text_input("Nombre")
+# age = st.number_input("Edad", min_value=0, max_value=120, step=1)
+# gender = st.selectbox("Género", ["Masculino", "Femenino", "Otro"])
+
+# if st.button("Guardar"):
+#     save_to_excel(name, age, gender)
+#     st.success("Datos guardados en output.xlsx")
+
+
+
+# URL del archivo en GitHub (reemplaza con tu propia URL)
+url = 'https://github.com/Manu-HR88/Prueba-1/blob/main/template.xlsx'
+
+# Descargar el archivo desde GitHub
+@st.cache
+def download_template(url):
+    response = requests.get(url)
+    response.raise_for_status()  # Asegurarse de que la solicitud fue exitosa
+    return BytesIO(response.content)
+
+# Cargar la plantilla de Excel desde el archivo descargado
+def load_workbook():
+    file_stream = download_template(url)
+    return openpyxl.load_workbook(file_stream)
+
+# Guardar datos en celdas específicas
+def save_to_excel(name, age, gender):
+    wb = load_workbook()
+    sheet = wb.active
+    sheet['A1'] = name  # Guardar nombre en celda A1
+    sheet['B1'] = age   # Guardar edad en celda B1
+    sheet['C1'] = gender # Guardar género en celda C1
+    wb.save('output.xlsx')
+
+# Crear la interfaz de usuario
+st.title("Formulario de Información")
+
+name = st.text_input("Nombre")
+age = st.number_input("Edad", min_value=0, max_value=120, step=1)
+gender = st.selectbox("Género", ["Masculino", "Femenino", "Otro"])
+
+if st.button("Guardar"):
+    save_to_excel(name, age, gender)
+    st.success("Datos guardados en output.xlsx")
