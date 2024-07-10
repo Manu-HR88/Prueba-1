@@ -8,6 +8,12 @@ from datetime import datetime
 # URL del archivo en GitHub
 url = 'https://github.com/Manu-HR88/Prueba-1/raw/main/template.xlsx'
 
+# Carpeta para guardar archivos localmente (ajústala según tu configuración)
+output_folder = './output/'
+
+# Crear la carpeta de salida si no existe
+os.makedirs(output_folder, exist_ok=True)
+
 # Descargar el archivo desde GitHub
 @st.cache_data
 def download_template(url):
@@ -30,9 +36,9 @@ def save_to_excel(name, age, gender):
     
     # Generar un nombre de archivo único
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    output_filename = f'output_{timestamp}.xlsx'
+    output_filename = os.path.join(output_folder, f'output_{timestamp}.xlsx')
     
-    # Guardar en el directorio actual (asegúrate de tener permisos)
+    # Guardar en la carpeta especificada
     wb.save(output_filename)
     
     return output_filename
@@ -47,3 +53,6 @@ gender = st.selectbox("Género", ["Masculino", "Femenino", "Otro"])
 if st.button("Guardar"):
     output_filename = save_to_excel(name, age, gender)
     st.success(f"Datos guardados en {output_filename}")
+    
+    # Botón para descargar el archivo
+    st.download_button(label="Descargar archivo", data=open(output_filename, 'rb').read(), file_name=os.path.basename(output_filename))
